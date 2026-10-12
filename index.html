@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RedFi — Valuation & Deal Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B1020;--s1:#141A33d9;--s2:#1B2342;--ink:#EAF0FF;--mut:#9AA7CF;--line:#2A3560;--brand:#7C5CFF;--coral:#FF5C7A;--mint:#2EE6A6;--amber:#FFB547;--bad:#FF4D6D;--g1:#7C5CFF55;--g2:#FF5C7A44;--sans:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#F3F5FF;--s1:#ffffffee;--s2:#EAEEFF;--ink:#141A3A;--mut:#5A6590;--line:#D5DBF5;--mint:#0E9F74;--bad:#E0334F;--g1:#7C5CFF33;--g2:#FF5C7A2b}}
+:root[data-theme="light"]{--bg:#F3F5FF;--s1:#ffffffee;--s2:#EAEEFF;--ink:#141A3A;--mut:#5A6590;--line:#D5DBF5;--mint:#0E9F74;--bad:#E0334F;--g1:#7C5CFF33;--g2:#FF5C7A2b}
+:root[data-theme="dark"]{--bg:#0B1020;--s1:#141A33d9;--s2:#1B2342;--ink:#EAF0FF;--mut:#9AA7CF;--line:#2A3560;--mint:#2EE6A6;--bad:#FF4D6D;--g1:#7C5CFF55;--g2:#FF5C7A44}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans)}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;background:radial-gradient(40% 35% at 20% 15%,var(--g1),transparent),radial-gradient(35% 30% at 85% 25%,var(--g2),transparent);animation:drift 20s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(4%,6%) scale(1.15)}}@keyframes in{from{opacity:0;transform:translateY(14px)}}@keyframes pulse{50%{box-shadow:0 0 50px var(--g1)}}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:var(--s1);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.logo{font:700 24px var(--sans);background:linear-gradient(90deg,var(--brand),var(--coral));-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{display:flex;gap:4px;background:var(--s2);padding:4px;border-radius:99px}
+.tab,#th{border:0;background:none;color:var(--mut);padding:8px 14px;border-radius:99px;font:600 14px var(--sans);cursor:pointer;transition:.25s}
+.tab.on{background:linear-gradient(90deg,var(--brand),var(--coral));color:#fff;box-shadow:0 4px 18px var(--g1)}
+#th{color:var(--ink);font-size:18px;padding:6px 10px}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+main{max-width:1060px;margin:0 auto;padding:18px 14px 40px}
+h1{font-size:clamp(26px,6vw,38px);line-height:1.1;margin:6px 0}.sub{color:var(--mut);margin:0 0 16px}
+.pg{display:none}.pg.on{display:block}.pg.on .card,.pg.on .hero,.pg.on .mini{animation:in .55s both}
+.grid{display:grid;gap:16px;grid-template-columns:minmax(0,370px) minmax(0,1fr)}@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.res{display:grid;gap:16px;min-width:0}.res>:nth-child(2){animation-delay:.08s!important}.res>:nth-child(3){animation-delay:.16s!important}.res>:nth-child(4){animation-delay:.24s!important}.res>:nth-child(5){animation-delay:.32s!important}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:18px;backdrop-filter:blur(10px);transition:transform .25s,box-shadow .25s}.card:hover{transform:translateY(-3px);box-shadow:0 14px 40px #0005}
+h3{margin:0 0 8px;font-size:16px}h3 small{color:var(--mut);font-weight:500;font-size:12px}
+.hero{border-radius:22px;padding:22px;color:#fff;background:linear-gradient(135deg,#7C5CFF,#FF5C7A);animation:in .55s both,pulse 4s ease-in-out infinite;transition:background .4s}
+.hero.pos{background:linear-gradient(135deg,#12b886,#2EE6A6);color:#04210f}.hero.neg{background:linear-gradient(135deg,#C21F4A,#FF5C7A)}
+.hero span{font-weight:600;opacity:.9}.hero b{display:block;font:600 clamp(40px,11vw,66px)/1.05 var(--mono)}.hero p{margin:8px 0 0}
+.two{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.two.s2{grid-template-columns:1fr 1fr}
+.mini{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:12px;transition:transform .25s}.mini:hover{transform:translateY(-3px)}.mini span{display:block;color:var(--mut);font-size:12.5px}.mini b{font:600 clamp(15px,4vw,22px) var(--mono)}
+.f{margin:16px 0}.f label{display:flex;justify-content:space-between;font-weight:600}.f label b{font:600 15px var(--mono);color:var(--coral)}
+input[type=range]{width:100%;accent-color:var(--brand);height:28px;margin:2px 0}
+.nb{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:0 10px;margin-top:4px}.nb:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px var(--g1)}
+.nb input{flex:1;min-width:0;background:none;border:0;color:inherit;font:600 17px var(--mono);padding:10px 0}.nb span{color:var(--mut)}
+small.h{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--line);background:var(--s2);color:var(--ink);border-radius:99px;padding:8px 14px;font:600 14px var(--sans);cursor:pointer;transition:.2s}.chip:hover{transform:translateY(-2px);border-color:var(--brand)}.chip:active{transform:scale(.95)}
+details{margin-top:12px}summary{cursor:pointer;color:var(--mut);font-weight:600}
+.cols{display:flex;gap:10px}.col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}.bw{height:130px;width:100%;display:flex;align-items:flex-end}
+.bar{width:100%;height:0;border-radius:10px 10px 0 0;background:linear-gradient(var(--brand),var(--coral));transition:height .7s cubic-bezier(.2,.8,.2,1)}.col em{font:600 11px var(--mono);font-style:normal}.col span{color:var(--mut);font-size:12px}
+.r{display:grid;grid-template-columns:92px 1fr 86px;gap:8px;align-items:center;margin:10px 0;font-size:13.5px}.tr{height:14px;background:var(--s2);border-radius:99px;overflow:hidden}.tr i{display:block;height:100%;width:0;border-radius:99px;transition:width .7s cubic-bezier(.2,.8,.2,1)}.r b{font:600 12.5px var(--mono);text-align:right}
+.hm{display:grid;grid-template-columns:auto repeat(5,1fr);gap:4px;overflow-x:auto}.hh{display:grid;place-items:center;color:var(--mut);font:600 11px var(--mono);padding:0 4px}
+.cell{border:0;border-radius:8px;padding:10px 0;color:var(--ink);background:var(--s2);font:600 12px var(--mono);cursor:pointer;transition:transform .15s}.cell:hover{transform:scale(1.1);outline:2px solid var(--brand)}.cell.c{outline:2px solid var(--amber)}
+.g{position:relative;height:16px;border-radius:99px;background:linear-gradient(90deg,var(--bad),var(--s2) 50%,var(--mint));margin:28px 0 8px}.g::after{content:"";position:absolute;left:50%;top:-5px;bottom:-5px;width:2px;background:var(--mut)}
+.nd{position:absolute;left:50%;top:-8px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:#fff;border:5px solid var(--brand);z-index:2;transition:left .8s cubic-bezier(.3,1.4,.4,1)}.gl{display:flex;justify-content:space-between;color:var(--mut);font:12px var(--mono)}
+footer{text-align:center;color:var(--mut);font-size:12.5px;padding:10px}
+@media(prefers-reduced-motion:reduce){*,body::before{animation:none!important;transition:none!important}}
+</style></head><body>
+<header><div class="logo">RedFi</div><nav><button class="tab on" data-p="v">Valuation</button><button class="tab" data-p="d">Deal Desk</button></nav><button id="th" aria-label="Switch light or dark">◐</button></header>
+<main>
+<section id="p-v" class="pg on"><h1>What is a company really worth?</h1><p class="sub">Move the sliders. The answer updates instantly.</p>
+<div class="grid"><div class="card"><h3>Try a scenario</h3><div class="chips" data-for="v"><button class="chip" data-s="g1:8,g5:3,mg:16,wacc:11,tgr:2">Cautious</button><button class="chip" data-s="g1:12,g5:5,mg:20,wacc:9,tgr:2.5">Base</button><button class="chip" data-s="g1:16,g5:7,mg:24,wacc:8,tgr:3">Bull</button></div><div id="vin"></div><details><summary>More settings</summary><div id="vadv"></div></details></div>
+<div class="res"><div class="hero" id="hv"><span>Estimated value per share</span><b id="vp">$0</b><p id="vs" aria-live="polite"></p></div>
+<div class="two s2"><div class="mini"><span>Company value</span><b id="ev"></b></div><div class="mini"><span>Value to shareholders</span><b id="eq"></b></div></div>
+<div class="card"><h3>Cash the business makes each year <small>in $ millions</small></h3><div class="cols" id="cols"></div></div>
+<div class="card"><h3>Where the value comes from</h3><div id="wf"></div></div>
+<div class="card"><h3>What if you are wrong? <small>tap a box to try it</small></h3><div class="hm" id="hm"></div><small class="h">Rows: return investors want. Columns: long-term growth. Gold box is your current answer.</small></div></div></div></section>
+<section id="p-d" class="pg"><h1>Will this deal boost earnings?</h1><p class="sub">One company buys another. See if the buyer's profit per share goes up.</p>
+<div class="grid"><div class="card"><h3>Try a way to pay</h3><div class="chips" data-for="d"><button class="chip" data-s="sp:0">All cash</button><button class="chip" data-s="sp:50">Half and half</button><button class="chip" data-s="sp:100">All stock</button></div><div id="din"></div><details><summary>More settings</summary><div id="dadv"></div></details></div>
+<div class="res"><div class="hero pos" id="hd"><span id="hl">Boosts buyer earnings</span><b id="da">0%</b><p id="ds" aria-live="polite"></p></div>
+<div class="card"><h3>Good or bad for the buyer?</h3><div class="g"><div class="nd" id="nd"></div></div><div class="gl"><span>−20% worse</span><span>0</span><span>+20% better</span></div></div>
+<div class="two"><div class="mini"><span>Deal price</span><b id="dv"></b></div><div class="mini"><span>Premium paid</span><b id="pr"></b></div><div class="mini"><span>New shares</span><b id="ns"></b></div></div>
+<div class="card"><h3>Profit per share <small>before vs after</small></h3><div id="eps"></div></div>
+<div class="card"><h3>How the combined profit adds up <small>$ millions</small></h3><div id="br"></div></div></div></div></section>
+</main><footer>RedFi by Red code · A learning tool, not financial advice.</footer>
+<script>
+const $=s=>document.querySelector(s),V=id=>parseFloat($('#'+id).value)||0,cl=(x,a,b)=>Math.max(a,Math.min(b,x)),
+fm=n=>(n<0?'-':'')+'$'+Math.abs(Math.round(n)).toLocaleString('en-US')+'M',fp=n=>(n<0?'-':'')+'$'+Math.abs(n).toFixed(2),pc=n=>(n>=0?'+':'')+(n*100).toFixed(1)+'%',
+N=['$','M'];
+const VF=[['rev','Sales today','How much the company sells in a year',0,0,0,500,N,'n'],['g1','Growth this year','How fast sales grow next year',0,30,.5,12,'%','s'],['g5','Growth in year 5','Growth usually slows down over time',0,20,.5,5,'%','s'],['mg','Profit margin','Cents of operating profit per $1 of sales',1,40,.5,20,'%','s'],['ri','Reinvestment','Share of sales spent to keep the business growing',0,15,.5,2,'%','s'],['wacc','Return investors want','Also called WACC. Higher means a lower value today',5,15,.5,9,'%','s'],['tgr','Long-term growth','How fast it grows forever after year 5',0,4,.25,2.5,'%','s'],['debt','Debt minus cash','Net debt. Use a negative number if cash is higher',0,0,0,200,N,'n'],['sh','Shares','Millions of shares that exist',0,0,0,100,['','M'],'n'],['mkt','Current stock price','Optional. Type it to see if the stock looks cheap',0,0,0,'',['$',''],'n']],
+VA=[['tax','Tax rate','Share of profit paid in taxes',0,40,1,25,'%','s']],
+DF=[['ap','Buyer share price','What one buyer share costs today',0,0,0,52,['$',''],'n'],['as','Buyer shares','Millions of shares the buyer has',0,0,0,200,['','M'],'n'],['an','Buyer yearly profit','Net income, in millions',0,0,0,400,N,'n'],['tm','Target price today','Before the deal is announced',0,0,0,35,['$',''],'n'],['td','Offer price','What the buyer pays per target share',0,0,0,42,['$',''],'n'],['ts','Target shares','Millions of shares the target has',0,0,0,80,['','M'],'n'],['tn','Target yearly profit','Net income, in millions',0,0,0,120,N,'n'],['sp','Paid with stock','The rest is paid with borrowed cash',0,100,5,50,'%','s'],['sy','Cost savings','Yearly savings from combining, before tax',0,0,0,25,N,'n']],
+DA=[['fr','Interest on borrowing','What the buyer pays on borrowed cash',0,12,.25,4,'%','s'],['mtx','Tax rate','Share of profit paid in taxes',0,40,1,25,'%','s']];
+const build=(b,l)=>$(b).innerHTML=l.map(([id,t,h,mn,mx,st,v,u,k])=>k=='s'?`<div class="f"><label for="${id}">${t}<b id="o-${id}"></b></label><input type="range" id="${id}" min="${mn}" max="${mx}" step="${st}" value="${v}"><small class="h">${h}</small></div>`:`<div class="f"><label for="${id}">${t}</label><div class="nb"><span>${u[0]}</span><input type="number" inputmode="decimal" id="${id}" step="any" value="${v}" placeholder="${v===''?'optional':''}"><span>${u[1]}</span></div><small class="h">${h}</small></div>`).join('');
+build('#vin',VF);build('#vadv',VA);build('#din',DF);build('#dadv',DA);
+function roll(el,to,f){const a=el._c||0,t0=performance.now(),id=el._t=(el._t||0)+1;if(matchMedia('(prefers-reduced-motion:reduce)').matches){el._c=to;el.textContent=f(to);return}(function s(t){if(el._t!=id)return;const k=Math.min(1,(t-t0)/450),e=1-Math.pow(1-k,3);el._c=a+(to-a)*e;el.textContent=f(el._c);if(k<1)requestAnimationFrame(s)})(t0)}
+const rows=(b,n)=>$(b).innerHTML=Array(n).fill('<div class="r"><span></span><div class="tr"><i></i></div><b></b></div>').join('');
+const row=(b,i,l,t,w,c)=>{const r=$(b).children[i];r.children[0].textContent=l;r.children[2].textContent=t;const e=r.querySelector('i');e.style.width=cl(w*100,0,100)+'%';e.style.background=c};
+$('#cols').innerHTML=[1,2,3,4,5].map(i=>`<div class="col"><div class="bw"><div class="bar"></div></div><em></em><span>Year ${i}</span></div>`).join('');rows('#wf',4);rows('#eps',2);rows('#br',5);
+function dcf(w,t){const r0=V('rev'),g1=V('g1')/100,g5=V('g5')/100,mg=V('mg')/100,ri=V('ri')/100,tx=V('tax')/100;let r=r0,s=0,y=[],f=0;for(let i=1;i<=5;i++){r*=1+g1+(g5-g1)*(i-1)/4;f=r*mg*(1-tx)-r*ri;const p=f/Math.pow(1+w,i);s+=p;y.push(f)}const tv=w>t?f*(1+t)/(w-t):0,pt=tv/Math.pow(1+w,5),ev=s+pt,eq=ev-V('debt'),sh=V('sh');return{y,s,pt,ev,eq,px:sh>0?eq/sh:0}}
+function rv(){const w=V('wacc')/100,t=V('tgr')/100,r=dcf(w,t),mx=Math.max(...r.y.map(Math.abs),1);
+ roll($('#vp'),r.px,fp);roll($('#ev'),r.ev,fm);roll($('#eq'),r.eq,fm);$('#hv').className='hero '+(r.px>0?'':'neg');
+ [...$('#cols').children].forEach((c,i)=>{c.querySelector('.bar').style.height=cl(Math.max(r.y[i],0)/mx*100,2,100)+'%';c.querySelector('em').textContent=Math.round(r.y[i])});
+ const e=Math.max(Math.abs(r.ev),1);row('#wf',0,'Next 5 years',fm(r.s),r.s/e,'var(--brand)');row('#wf',1,'After year 5',fm(r.pt),r.pt/e,'var(--coral)');row('#wf',2,'Less debt',fm(-V('debt')),Math.abs(V('debt'))/e,'var(--amber)');row('#wf',3,'Yours to share',fm(r.eq),Math.abs(r.eq)/e,'var(--mint)');
+ let s=r.ev>0?`${Math.round(r.pt/r.ev*100)}% of today's value comes from what happens after year 5. `:'Under these settings the company is not worth much. ';const m=V('mkt');if(m>0)s+=`At ${fp(m)} per share the stock looks ${r.px>m?'cheap':'expensive'} (${pc(r.px/m-1)} vs the market).`;$('#vs').textContent=s;
+ let h='<span></span>'+[-1,-.5,0,.5,1].map(d=>`<div class="hh">${(t*100+d).toFixed(1)}%</div>`).join('');const base=Math.abs(r.px)||1;
+ [-1,-.5,0,.5,1].forEach(a=>{h+=`<div class="hh">${(w*100+a).toFixed(1)}%</div>`;[-1,-.5,0,.5,1].forEach(b=>{const W=w+a/100,T=t+b/100;if(W<=T){h+='<button class="cell" disabled>-</button>';return}const p=dcf(W,T).px,d=cl((p-r.px)/base,-1,1),al=Math.min(.6,Math.abs(d)*1.2);h+=`<button class="cell${a==0&&b==0?' c':''}" data-w="${W*100}" data-t="${T*100}" style="background:${d>=0?'rgba(46,230,166,':'rgba(255,77,109,'}${al})">${fp(p)}</button>`})});$('#hm').innerHTML=h}
+function dl(){const ap=V('ap'),as=V('as'),an=V('an'),tm=V('tm'),td=V('td'),ts=V('ts'),tn=V('tn'),sp=V('sp')/100,sy=V('sy'),fr=V('fr')/100,tx=V('mtx')/100;
+ const dv=ts*td,cash=dv*(1-sp),ns=ap>0?dv*sp/ap:0,fin=cash*fr*(1-tx),syn=sy*(1-tx),cn=an+tn+syn-fin,ps=as+ns,e0=as>0?an/as:0,e1=ps>0?cn/ps:0,acc=e0?(e1-e0)/e0:0,prem=tm>0?td/tm-1:0;
+ roll($('#da'),acc,pc);roll($('#dv'),dv,fm);roll($('#pr'),prem,pc);roll($('#ns'),ns,x=>x.toFixed(1)+'M');
+ $('#hd').className='hero '+(acc>=0?'pos':'neg');$('#hl').textContent=acc>=0?'Boosts buyer earnings':'Hurts buyer earnings';
+ $('#ds').textContent=`The buyer pays ${fm(dv)}. Profit per share goes from ${fp(e0)} to ${fp(e1)}. Slide the stock percentage to see how cash or stock changes it.`;
+ $('#nd').style.left=50+cl(acc,-.2,.2)/.2*50+'%';const me=Math.max(e0,e1,.01);row('#eps',0,'Before',fp(e0),e0/me,'var(--brand)');row('#eps',1,'After',fp(e1),e1/me,acc>=0?'var(--mint)':'var(--bad)');
+ const m=Math.max(Math.abs(cn),an+tn+syn,1);row('#br',0,'Buyer profit',fm(an),an/m,'var(--brand)');row('#br',1,'Target profit',fm(tn),tn/m,'var(--coral)');row('#br',2,'Savings',fm(syn),syn/m,'var(--mint)');row('#br',3,'Interest cost',fm(-fin),fin/m,'var(--amber)');row('#br',4,'Combined',fm(cn),Math.abs(cn)/m,'var(--ink)')}
+const sync=el=>{const o=$('#o-'+el.id);if(o)o.textContent=el.value+'%'},all=()=>{document.querySelectorAll('input[type=range]').forEach(sync);rv();dl()};
+document.addEventListener('input',e=>{if(e.target.matches('input')){sync(e.target);e.target.closest('#p-v')?rv():dl()}});
+document.addEventListener('click',e=>{const c=e.target.closest('.chip'),h=e.target.closest('.cell:not([disabled])'),t=e.target.closest('.tab');
+ if(c)c.dataset.s.split(',').forEach(p=>{const[k,v]=p.split(':');$('#'+k).value=v});if(h){$('#wacc').value=cl(Math.round(h.dataset.w*4)/4,5,15);$('#tgr').value=cl(Math.round(h.dataset.t*4)/4,0,4)}
+ if(c||h)all();if(t){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x==t));document.querySelectorAll('.pg').forEach(x=>x.classList.toggle('on',x.id=='p-'+t.dataset.p))}});
+$('#th').onclick=()=>{const d=document.documentElement,l=d.dataset.theme?d.dataset.theme=='light':matchMedia('(prefers-color-scheme:light)').matches;d.dataset.theme=l?'dark':'light'};
+all();
+</script></body></html>
